@@ -4,7 +4,7 @@
 #include <dt-bindings/zmk/rgb.h>
 
 / {
-    chosen { zmk,matrix-transform = &dactyl_manuform_number_row; };
+    chosen { zmk,matrix-transform = &imprint_number_row_full_bottom_row; };
 
     behaviors {
         shiftcaps: shiftcaps {
