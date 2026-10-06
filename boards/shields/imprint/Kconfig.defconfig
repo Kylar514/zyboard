@@ -1,0 +1,77 @@
+# Left half is the BLE central when no dongle is present.
+# When using the dongle, the left half is demoted to peripheral via cmake-args.
+if SHIELD_IMPRINT_LEFT
+
+config ZMK_KEYBOARD_NAME
+    default "Imprint"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+config ZMK_USB
+    default n
+
+endif
+
+# Dongle acts as the USB central, connecting to both halves as peripherals.
+if SHIELD_IMPRINT_DONGLE
+
+config ZMK_KEYBOARD_NAME
+    default "Imprint"
+
+config ZMK_SPLIT_ROLE_CENTRAL
+    default y
+
+config ZMK_SPLIT_BLE_CENTRAL_PERIPHERALS
+    default 2
+
+# 2 peripherals (halves) + 5 host BT profiles = 7
+config BT_MAX_CONN
+    default 7
+
+config BT_MAX_PAIRED
+    default 7
+
+endif
+
+# Split and sleep settings apply to the physical halves only.
+# The dongle is USB-powered and does not need deep sleep.
+if SHIELD_IMPRINT_LEFT || SHIELD_IMPRINT_RIGHT
+
+config ZMK_SPLIT
+    default y
+
+config ZMK_BATTERY_REPORTING
+    default y
+
+config ZMK_SLEEP
+    default y
+
+endif
+
+# RGB underglow defaults apply only to the physical halves.
+if SHIELD_IMPRINT_LEFT || SHIELD_IMPRINT_RIGHT
+
+config ZMK_RGB_UNDERGLOW
+    default y
+    imply WS2812_STRIP_SPI
+
+config ZMK_RGB_UNDERGLOW_ON_START
+    default n
+
+config ZMK_RGB_UNDERGLOW_BRT_MIN
+    default 5
+
+config ZMK_RGB_UNDERGLOW_BRT_MAX
+    default 50
+
+config ZMK_RGB_UNDERGLOW_BRT_START
+    default 25
+
+config ZMK_RGB_UNDERGLOW_BRT_STEP
+    default 5
+
+config ZMK_RGB_UNDERGLOW_HUE_START
+    default 40
+
+endif

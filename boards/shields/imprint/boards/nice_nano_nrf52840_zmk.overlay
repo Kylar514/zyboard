@@ -1,0 +1,50 @@
+// nice!nano v2 board-variant overlay for the Imprint shield.
+// Configures SPI3 pinctrl and the WS2812 RGB underglow LED strip.
+// SPI1 (trackball/PMW3610) is intentionally omitted — no trackballs in this build.
+
+#include <dt-bindings/led/led.h>
+
+&pinctrl {
+    spi3_default: spi3_default {
+        group1 {
+            psels = <NRF_PSEL(SPIM_MOSI, 0, 8)>;
+        };
+    };
+
+    spi3_sleep: spi3_sleep {
+        group1 {
+            psels = <NRF_PSEL(SPIM_MOSI, 0, 8)>;
+            low-power-enable;
+        };
+    };
+};
+
+&spi3 {
+    compatible = "nordic,nrf-spim";
+    status = "okay";
+
+    pinctrl-0 = <&spi3_default>;
+    pinctrl-1 = <&spi3_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    // WS2812 RGB underglow — 50 LEDs per half, GRB color order.
+    led_strip: ws2812@0 {
+        compatible = "worldsemi,ws2812-spi";
+        label = "WS2812";
+
+        reg = <0>;
+        spi-max-frequency = <4000000>;
+
+        chain-length = <50>;
+        spi-one-frame = <0x70>;
+        spi-zero-frame = <0x40>;
+
+        color-mapping = <LED_COLOR_ID_GREEN LED_COLOR_ID_RED LED_COLOR_ID_BLUE>;
+    };
+};
+
+/ {
+    chosen {
+        zmk,underglow = &led_strip;
+    };
+};

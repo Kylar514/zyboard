@@ -1,0 +1,34 @@
+# GitHub Actions build matrix.
+# Each entry produces one firmware .uf2 artifact.
+# The workflow reads this file automatically — see .github/workflows/build.yml.
+#
+# Flashing order for first-time setup or re-pairing:
+#   1. Flash settings_reset to all three devices (clears bond data).
+#   2. Flash actual firmware to each device.
+#   3. Power on all three — they pair automatically.
+---
+include:
+  # Left half — peripheral when dongle is present.
+  # cmake-args demotes it from central (Kconfig.defconfig default) to peripheral.
+  - board: nice_nano//zmk
+    shield: imprint_left
+    cmake-args: -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+
+  # Right half — always a peripheral.
+  - board: nice_nano//zmk
+    shield: imprint_right
+
+  # Dongle — USB central. Connects to both halves over BLE and presents as
+  # a USB HID keyboard to the host. Enables PC wake-from-sleep on keypress.
+  - board: xiao_ble//zmk
+    shield: imprint_dongle
+
+  # settings_reset — wipes all stored Bluetooth bonds from a device.
+  # Flash this to ALL THREE devices before first pairing or whenever re-pairing.
+  # Use the nice_nano binary for both halves.
+  - board: nice_nano//zmk
+    shield: settings_reset
+
+  # Use the xiao_ble binary for the dongle.
+  - board: xiao_ble//zmk
+    shield: settings_reset

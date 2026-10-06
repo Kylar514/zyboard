@@ -1,0 +1,38 @@
+// Right half devicetree overlay.
+// Includes the shared shield definition, applies row-offset = <7> to all
+// matrix transforms (right half occupies rows 7-13 of the GPIO matrix),
+// and assigns the row GPIOs for the right half.
+// Trackball (PMW3610) nodes are intentionally omitted.
+
+#include "imprint.dtsi"
+
+// The right half occupies the upper 7 rows of the 14-row matrix.
+// Every transform must have its row-offset corrected so ZMK maps
+// right-half scan events to the correct logical key positions.
+&default_transform                      { row-offset = <7>; };
+&imprint_function_row                   { row-offset = <7>; };
+&imprint_function_row_full_bottom_row   { row-offset = <7>; };
+&imprint_function_row_no_bottom_row     { row-offset = <7>; };
+&imprint_number_row                     { row-offset = <7>; };
+&imprint_number_row_full_bottom_row     { row-offset = <7>; };
+&imprint_number_row_no_bottom_row       { row-offset = <7>; };
+&imprint_letters_only                   { row-offset = <7>; };
+&imprint_letters_only_full_bottom_row   { row-offset = <7>; };
+&imprint_letters_only_no_bottom_row     { row-offset = <7>; };
+&dactyl_manuform_number_row             { row-offset = <7>; };
+&dactyl_single_arc_letters_only         { row-offset = <7>; };
+&dactyl_single_arc_number_row           { row-offset = <7>; };
+// legacy_single_arc_imprint intentionally omitted — different column count,
+// not compatible with the row-offset mechanism used here.
+
+&kscan0 {
+    row-gpios
+        = <&gpio1 4  GPIO_ACTIVE_HIGH>  // row0
+        , <&gpio0 11 GPIO_ACTIVE_HIGH>  // row1
+        , <&gpio0 29 GPIO_ACTIVE_HIGH>  // row2
+        , <&gpio1 0  GPIO_ACTIVE_HIGH>  // row3
+        , <&gpio0 10 GPIO_ACTIVE_HIGH>  // row4
+        , <&gpio0 2  GPIO_ACTIVE_HIGH>  // row5
+        , <&gpio0 9  GPIO_ACTIVE_HIGH>  // row6
+        ;
+};

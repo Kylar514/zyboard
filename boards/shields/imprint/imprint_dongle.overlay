@@ -1,0 +1,35 @@
+// Dongle devicetree overlay.
+// The dongle is a Seeed XIAO nRF52840 plugged into the host computer via USB.
+// It acts as the BLE central, connecting wirelessly to both keyboard halves,
+// and presents as a standard USB HID keyboard to the host.
+//
+// The dongle has no physical keys of its own, so we use a mock kscan.
+// The matrix transform references dactyl_manuform_number_row from imprint.dtsi,
+// which is the active layout for this keyboard build.
+//
+// USB remote wakeup (pressing a key wakes the host computer from sleep) is
+// handled automatically by ZMK when the USB bus is suspended.
+
+#include "imprint.dtsi"
+
+/ {
+    chosen {
+        zmk,kscan = &mock_kscan;
+        zmk,matrix_transform = &dactyl_manuform_number_row;
+    };
+
+    // Zero-key mock scanner — satisfies ZMK's kscan requirement on a device
+    // with no physical key matrix.
+    mock_kscan: mock_kscan_0 {
+        compatible = "zmk,kscan-mock";
+        columns = <0>;
+        rows = <0>;
+        events = <0>;
+    };
+};
+
+// Disable the real kscan so its GPIO pin references don't conflict.
+// The dongle board doesn't wire those pins to a key matrix.
+&kscan0 {
+    status = "disabled";
+};

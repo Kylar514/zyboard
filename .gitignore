@@ -1,0 +1,8 @@
+.west/
+build/
+modules/
+optional/
+zmk/
+zephyr/
+
+.toolchains/
