@@ -3,6 +3,6 @@ build/
 modules/
 optional/
 zmk/
-zephyr/
+/zephyr/
 
 .toolchains/

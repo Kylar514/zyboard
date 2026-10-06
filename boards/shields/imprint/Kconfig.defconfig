@@ -75,6 +75,6 @@ config ZMK_RGB_UNDERGLOW_BRT_STEP
     default 5
 
 config ZMK_RGB_UNDERGLOW_HUE_START
-    default 40
+    default 120
 
 endif

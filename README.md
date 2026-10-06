@@ -66,6 +66,10 @@ The deep-sleep timer runs from the last keypress. After 1 minute, RGB turns off 
 the halves stay awake and BLE-connected, so typing resumes immediately. After 60 minutes
 total inactivity, each half enters deep sleep; a keypress wakes it and it reconnects to
 the dongle before keystrokes reach the host. Reconnection time varies with radio conditions.
+Each half briefly shows a red breathing battery alert using its own battery reading:
+60 seconds at 10% or lower, extended to 120 seconds if it reaches 5% or lower. It then
+restores that half's previous RGB color, effect, and on/off state. The dongle has no
+battery indicator.
 
 ---
 

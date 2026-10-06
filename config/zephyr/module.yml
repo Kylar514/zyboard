@@ -1,0 +1,6 @@
+name: zyboard_config
+build:
+  cmake: .
+  kconfig: Kconfig
+  settings:
+    board_root: ..
