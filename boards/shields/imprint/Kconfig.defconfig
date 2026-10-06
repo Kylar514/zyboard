@@ -57,7 +57,10 @@ config ZMK_RGB_UNDERGLOW
     imply WS2812_STRIP_SPI
 
 config ZMK_RGB_UNDERGLOW_ON_START
-    default n
+    default y
+
+config ZMK_RGB_UNDERGLOW_AUTO_OFF_IDLE
+    default y
 
 config ZMK_RGB_UNDERGLOW_BRT_MIN
     default 5
@@ -66,7 +69,7 @@ config ZMK_RGB_UNDERGLOW_BRT_MAX
     default 50
 
 config ZMK_RGB_UNDERGLOW_BRT_START
-    default 25
+    default 5
 
 config ZMK_RGB_UNDERGLOW_BRT_STEP
     default 5

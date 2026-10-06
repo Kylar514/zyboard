@@ -60,12 +60,12 @@ check "Allow this device to wake the computer". On Linux:
 |-------|---------|--------|-------------------|
 | Active | — | RGB on, BLE connected | Instant |
 | Idle | 1 min inactivity | RGB off, BLE stays up | Instant |
-| Deep sleep | 15 min inactivity | MCU shuts down, BLE off | ~1–3s reconnect to dongle |
+| Deep sleep | 60 min inactivity | MCU shuts down, BLE off | A few seconds to reconnect to dongle |
 
-The 15-minute deep sleep timer runs from the last keypress. The idle timer (RGB off)
-triggers first at 1 minute. Once in deep sleep, any keypress wakes the MCU; it then
-re-advertises and reconnects to the dongle over BLE before keystrokes reach the host.
-The ~1–3s reconnect delay is inherent to BLE and cannot be reduced further in firmware.
+The deep-sleep timer runs from the last keypress. After 1 minute, RGB turns off while
+the halves stay awake and BLE-connected, so typing resumes immediately. After 60 minutes
+total inactivity, each half enters deep sleep; a keypress wakes it and it reconnects to
+the dongle before keystrokes reach the host. Reconnection time varies with radio conditions.
 
 ---
 
