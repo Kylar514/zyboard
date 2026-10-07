@@ -1,32 +1,38 @@
 # zyboard
 
 ZMK firmware configuration for a wireless split ergonomic keyboard built on the
-[Cyboard Imprint](https://www.cyboard.digital/) flex-PCB system in a Dactyl Manuform
+[Cyboard](https://www.cyboard.digital/) flex-PCB system in a Dactyl Manuform
 number-row body.
+
+<img width="2048" height="1536" alt="268fbecc-fe1b-4f6f-9f98-cbf9358c3071" src="https://github.com/user-attachments/assets/c6ff3c1e-c0f6-4f66-9ba3-f55597b9b367" />
+
 
 ---
 
 ## Hardware
 
-| Component | Part |
-|-----------|------|
-| Body | Cyboard Imprint — Dactyl Manuform, number-row variant |
-| Controllers (both halves) | nice!nano v2 (nRF52840) |
-| Dongle | Seeed XIAO nRF52840 |
-| Batteries | 3000 mAh (both halves) |
-| RGB underglow | WS2812 strip, 50 LEDs per half |
-| Firmware | ZMK on Zephyr RTOS |
+| Component                 | Part                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Body                      | Cyboard — Dactyl Manuform, number-row variant                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Controllers (both halves) | [nice!nano v2 nRF52840](https://www.amazon.com/AITRIP-Development-Bluetooth-Management-Module%EF%BC%8CNano/dp/B0DCZJKYL1/ref=sr_1_1?crid=2LOQ1C2L2H0LA&dib=eyJ2IjoiMSJ9.AAo6u5vX-cr0obYWEdxxF5J0l3yqb6BGdFZTik3Gbd8hcK8aaIWKEBItbMwowyBR_wV076nhmzThK1FUu02jxFFJ1rEQdkIDtbMuahvLWo5lbz3lX3RVYLAent-__ABG9nFbgU49tYmTN_gmfHOtMZ9zjomzj2xkcJ-o709yYIe48FrIBH1lkRc7IDFMRFkkT4W4lUY61_2xnPrz7XTDJ8AZ46EOCiwrfgS0qAgjtQkJmvNKY-gtxE5to4mDQsQNvPo1Hq1T06G3dcYkwdr5ZzMcgpg3sluF21oD1MZ1FlA.mUjyJdDF3oYGljemq8d2I0FxaF55hYOAR3-4icy_T8c&dib_tag=se&keywords=nice!Nano%2Bv2&qid=1791375846&s=electronics&sprefix=nice%2Bnano%2Bv2%2Celectronics%2C139&sr=1-1&th=1) |
+| Dongle                    | [Seeed XIAO nRF52840](https://www.amazon.com/dp/B0DJ6NZVJT?ref_=ppx_hzsearch_conn_dt_b_fed_asin_title_1&th=1)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Batteries                 | 3000 mAh (both halves)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Switches                  | [Gateron Black Ink V2s](https://www.gateron.co/products/gateron-ink-switch)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Keycaps                   | [YMDK DSA Black Blank keycaps](https://www.amazon.com/dp/B07S18VCDN)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| Firmware                  | ZMK on Zephyr RTOS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 ### Dongle connector note
 
 The XIAO nRF52840 has a **female USB-C port**. To use it as a plug-in dongle you
 need an adapter:
 
-- **USB-A hosts** (desktop, laptop with USB-A port): female USB-C to male USB-A adapter (~$2)
-- **USB-C hosts** (modern laptop): female USB-C to male USB-C coupler / gender changer
+- **USB-A hosts** (desktop, laptop with USB-A port): female USB-C to male USB-A
+  adapter (~$2)
+- **USB-C hosts** (modern laptop): female USB-C to male USB-C coupler / gender
+  changer
 
-The dongle plugs into the adapter; the adapter plugs into the computer. No firmware
-change is needed — this is purely a physical connector solution.
+The dongle plugs into the adapter; the adapter plugs into the computer. No
+firmware change is needed — this is purely a physical connector solution.
 
 ---
 
@@ -39,37 +45,38 @@ change is needed — this is purely a physical connector solution.
  (peripheral)
 ```
 
-The dongle is the **USB central**. Both halves are **BLE peripherals** that connect
-wirelessly to the dongle. The dongle runs the keymap logic and presents as a standard
-USB HID keyboard to the host computer.
+The dongle is the **USB central**. Both halves are **BLE peripherals** that
+connect wirelessly to the dongle. The dongle runs the keymap logic and presents
+as a standard USB HID keyboard to the host computer.
 
-Without the dongle plugged in, the keyboard does not function — the halves cannot
-connect directly to a host when configured this way.
+Without the dongle plugged in, the keyboard does not function — the halves
+cannot connect directly to a host when configured this way.
 
-**PC wake-from-sleep:** Pressing any key sends a USB remote wakeup signal through the
-dongle, waking the computer. On Windows you must enable this once: Device Manager →
-find the keyboard under Human Interface Devices → Properties → Power Management →
-check "Allow this device to wake the computer". On Linux:
+**PC wake-from-sleep:** Pressing any key sends a USB remote wakeup signal
+through the dongle, waking the computer. On Windows you must enable this once:
+Device Manager → find the keyboard under Human Interface Devices → Properties →
+Power Management → check "Allow this device to wake the computer". On Linux:
 `echo enabled | sudo tee /sys/bus/usb/devices/<device>/power/wakeup`
 
 ---
 
 ## Power / sleep behavior
 
-| State | Trigger | Effect | Keypress response |
-|-------|---------|--------|-------------------|
-| Active | — | RGB on, BLE connected | Instant |
-| Idle | 1 min inactivity | RGB off, BLE stays up | Instant |
+| State      | Trigger           | Effect                  | Keypress response                    |
+| ---------- | ----------------- | ----------------------- | ------------------------------------ |
+| Active     | —                 | RGB on, BLE connected   | Instant                              |
+| Idle       | 1 min inactivity  | RGB off, BLE stays up   | Instant                              |
 | Deep sleep | 60 min inactivity | MCU shuts down, BLE off | A few seconds to reconnect to dongle |
 
-The deep-sleep timer runs from the last keypress. After 1 minute, RGB turns off while
-the halves stay awake and BLE-connected, so typing resumes immediately. After 60 minutes
-total inactivity, each half enters deep sleep; a keypress wakes it and it reconnects to
-the dongle before keystrokes reach the host. Reconnection time varies with radio conditions.
-Each half briefly shows a red breathing battery alert using its own battery reading:
-60 seconds at 10% or lower, extended to 120 seconds if it reaches 5% or lower. It then
-restores that half's previous RGB color, effect, and on/off state. The dongle has no
-battery indicator.
+The deep-sleep timer runs from the last keypress. After 1 minute, RGB turns off
+while the halves stay awake and BLE-connected, so typing resumes immediately.
+After 60 minutes total inactivity, each half enters deep sleep; a keypress wakes
+it and it reconnects to the dongle before keystrokes reach the host.
+Reconnection time varies with radio conditions. Each half briefly shows a red
+breathing battery alert using its own battery reading: 60 seconds at 10% or
+lower, extended to 120 seconds if it reaches 5% or lower. It then restores that
+half's previous RGB color, effect, and on/off state. The dongle has no battery
+indicator.
 
 ---
 
@@ -114,17 +121,20 @@ zyboard/
 
 ### What `zephyr/module.yml` does
 
-The root `zephyr/module.yml` lets the ZMK reusable build workflow discover the local
-shield definitions. For a west workspace initialized inside this repository, the
-manifest project path is `config`, so `config/zephyr/module.yml` points the board root
-back to the repository root. Local builds pass `config/` as `ZMK_EXTRA_MODULES`.
+The root `zephyr/module.yml` lets the ZMK reusable build workflow discover the
+local shield definitions. For a west workspace initialized inside this
+repository, the manifest project path is `config`, so `config/zephyr/module.yml`
+points the board root back to the repository root. Local builds pass `config/`
+as `ZMK_EXTRA_MODULES`.
 
 ---
 
 ## Layers
 
-The active keymap (`config/imprint.keymap`) uses the `dactyl_manuform_number_row`
-matrix transform and defines 5 layers:
+The active keymap (`config/imprint.keymap`) uses the
+`dactyl_manuform_number_row` matrix transform and defines 5 layers:
+
+use [Keymap editor](https://nickcoutsos.github.io/keymap-editor/) to view and edit
 
 ### Layer 0 — Default (QWERTY)
 
@@ -148,14 +158,14 @@ Shft Z X C V B|  N M , . / Shft
 
 ### Layer 1 — F-keys
 
-F1–F12 mapped to the right half in a 3×4 grid (F10/F11/F12 on top row,
-F1/F2/F3 on bottom). All other keys transparent.
+F1–F12 mapped to the right half in a 3×4 grid (F10/F11/F12 on top row, F1/F2/F3
+on bottom). All other keys transparent.
 
 ### Layer 2 — Number pad + BT + RGB
 
-Left half: BT profile select (BT_SEL 0–4) and BT_CLR on bottom-left.
-Right half: numpad (7/8/9, 4/5/6, 1/2/3, 0) + full RGB underglow controls
-(toggle, hue, saturation, brightness, speed, effect cycling).
+Left half: BT profile select (BT_SEL 0–4) and BT_CLR on bottom-left. Right half:
+numpad (7/8/9, 4/5/6, 1/2/3, 0) + full RGB underglow controls (toggle, hue,
+saturation, brightness, speed, effect cycling).
 
 ### Layer 3 — Media
 
@@ -164,9 +174,9 @@ Right half: numpad (7/8/9, 4/5/6, 1/2/3, 0) + full RGB underglow controls
 
 ### Layer 4 — Game
 
-WASD locked to their physical positions regardless of any layer remapping.
-All other keys transparent. Switch back to layer 0 with the `→0` key in the
-thumb cluster.
+WASD locked to their physical positions regardless of any layer remapping. All
+other keys transparent. Switch back to layer 0 with the `→0` key in the thumb
+cluster.
 
 ---
 
@@ -175,21 +185,21 @@ thumb cluster.
 ### GitHub Actions (automatic)
 
 Push to any branch or open a pull request — the workflow in
-`.github/workflows/build.yml` runs automatically and produces `.uf2` artifacts for
-all targets in `build.yaml`:
+`.github/workflows/build.yml` runs automatically and produces `.uf2` artifacts
+for all targets in `build.yaml`:
 
-| Artifact | Board | Purpose |
-|----------|-------|---------|
-| `imprint_left` | nice!nano v2 (`nice_nano//zmk`) | Left half firmware |
-| `imprint_right` | nice!nano v2 (`nice_nano//zmk`) | Right half firmware |
-| `imprint_dongle` | XIAO nRF52840 | Dongle firmware |
-| `settings_reset` (`nice_nano//zmk`) | nice!nano v2 | Bond wipe for both halves |
-| `settings_reset` (`xiao_ble//zmk`) | XIAO nRF52840 | Bond wipe for dongle |
+| Artifact                            | Board                           | Purpose                   |
+| ----------------------------------- | ------------------------------- | ------------------------- |
+| `imprint_left`                      | nice!nano v2 (`nice_nano//zmk`) | Left half firmware        |
+| `imprint_right`                     | nice!nano v2 (`nice_nano//zmk`) | Right half firmware       |
+| `imprint_dongle`                    | XIAO nRF52840                   | Dongle firmware           |
+| `settings_reset` (`nice_nano//zmk`) | nice!nano v2                    | Bond wipe for both halves |
+| `settings_reset` (`xiao_ble//zmk`)  | XIAO nRF52840                   | Bond wipe for dongle      |
 
 ### Local build
 
-Follow the [ZMK getting started guide](https://zmk.dev/docs/development/setup) to set
-up a west workspace, then:
+Follow the [ZMK getting started guide](https://zmk.dev/docs/development/setup)
+to set up a west workspace, then:
 
 ```sh
 west build -s zmk/app -b nice_nano//zmk -- -DSHIELD=imprint_left -DZMK_CONFIG=/path/to/zyboard/config -DZMK_EXTRA_MODULES=/path/to/zyboard -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
@@ -201,14 +211,14 @@ west build -s zmk/app -b xiao_ble//zmk -- -DSHIELD=imprint_dongle -DZMK_CONFIG=/
 
 ## First-time setup / re-pairing
 
-> **This step is mandatory.** Skipping it is the most common cause of pairing failures
-> with a dongle setup.
+> **This step is mandatory.** Skipping it is the most common cause of pairing
+> failures with a dongle setup.
 
 1. **Flash `settings_reset`** to all three devices:
    - Both halves: use the `nice_nano//zmk` settings_reset binary
    - Dongle: use the `xiao_ble//zmk` settings_reset binary
-   - To enter bootloader: double-press the reset button; a USB drive named `NRF52BOOT`
-     or `XIAO-SENSE` appears; drag-and-drop the `.uf2` file onto it
+   - To enter bootloader: double-press the reset button; a USB drive named
+     `NRF52BOOT` or `XIAO-SENSE` appears; drag-and-drop the `.uf2` file onto it
 2. **Flash actual firmware** to each device (left, right, dongle)
 3. **Power on all three** — they advertise and pair automatically on first boot
 
@@ -219,16 +229,17 @@ firmware that changes the split configuration).
 
 ## Editing the keymap
 
-Edit `config/imprint.keymap`. The file uses standard ZMK keymap syntax. Push your
-changes and GitHub Actions will build new firmware automatically.
+Edit `config/imprint.keymap`. The file uses standard ZMK keymap syntax. Push
+your changes and GitHub Actions will build new firmware automatically.
 
 Key references:
+
 - [ZMK keycodes](https://zmk.dev/docs/codes)
 - [ZMK behaviors](https://zmk.dev/docs/behaviors/key-press)
 - [ZMK layers](https://zmk.dev/docs/behaviors/layers)
 
-To switch to a different matrix transform (different physical layout variant), change
-the `chosen` node at the top of `config/imprint.keymap`:
+To switch to a different matrix transform (different physical layout variant),
+change the `chosen` node at the top of `config/imprint.keymap`:
 
 ```dts
 chosen { zmk,matrix_transform = &dactyl_manuform_number_row; };
