@@ -49,18 +49,18 @@ config ZMK_SLEEP
 
 endif
 
-# RGB underglow defaults apply only to the physical halves.
-if SHIELD_IMPRINT_LEFT || SHIELD_IMPRINT_RIGHT
+# RGB behavior/state is also required on the dongle to forward global controls.
+if SHIELD_IMPRINT_LEFT || SHIELD_IMPRINT_RIGHT || SHIELD_IMPRINT_DONGLE
 
 config ZMK_RGB_UNDERGLOW
     default y
-    imply WS2812_STRIP_SPI
+    imply WS2812_STRIP_SPI if SHIELD_IMPRINT_LEFT || SHIELD_IMPRINT_RIGHT
 
 config ZMK_RGB_UNDERGLOW_ON_START
     default y
 
 config ZMK_RGB_UNDERGLOW_AUTO_OFF_IDLE
-    default y
+    default y if SHIELD_IMPRINT_LEFT || SHIELD_IMPRINT_RIGHT
 
 config ZMK_RGB_UNDERGLOW_BRT_MIN
     default 5
