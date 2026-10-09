@@ -193,8 +193,52 @@ for all targets in `build.yaml`:
 | `imprint_left`                      | nice!nano v2 (`nice_nano//zmk`) | Left half firmware        |
 | `imprint_right`                     | nice!nano v2 (`nice_nano//zmk`) | Right half firmware       |
 | `imprint_dongle`                    | XIAO nRF52840                   | Dongle firmware           |
-| `settings_reset` (`nice_nano//zmk`) | nice!nano v2                    | Bond wipe for both halves |
-| `settings_reset` (`xiao_ble//zmk`)  | XIAO nRF52840                   | Bond wipe for dongle      |
+| `settings_reset` (`nice_nano//zmk`) | nice!nano v2                    | Clear settings on a half  |
+| `settings_reset` (`xiao_ble//zmk`)  | XIAO nRF52840                   | Clear dongle settings     |
+
+### Which firmware to flash
+
+Routine updates use the normal `.uf2` files; they preserve saved settings and
+pairing, so **do not flash `settings_reset` for ordinary changes**.
+
+| Change | Normal firmware to flash |
+| --- | --- |
+| Layers or key bindings in `config/imprint.keymap` | Dongle; it is the split central and processes the keymap |
+| Power, sleep, RGB, or battery-indicator settings | Both nice!nano halves |
+| Dongle-specific USB/Bluetooth settings | Dongle |
+| Unsure which build targets are affected | Normal firmware to all three devices |
+
+### Viewing battery levels on Linux
+
+The dongle firmware exposes a second, vendor-defined USB HID interface for the
+two split battery readings. After building and flashing the normal dongle UF2,
+install the udev rule from this repository so your desktop user can read it:
+
+```sh
+sudo install -Dm644 udev/70-zyboard-battery.rules /etc/udev/rules.d/70-zyboard-battery.rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger --subsystem-match=hidraw
+```
+
+Unplug and reconnect the dongle, then run the dependency-free Python monitor:
+
+```sh
+python3 tools/battery_monitor.py
+```
+
+If it cannot find the interface automatically, list `/dev/hidraw*` and pass the
+battery interface explicitly with `--device /dev/hidrawN`. The two slots are
+assigned in BLE pairing order, which may not correspond consistently to left
+and right. A slot shows `unknown` until its first battery report arrives. Battery
+percentages are estimates based on voltage.
+
+Use `settings_reset` on **all three devices** when re-pairing is needed—for
+example, after changing the split central role, replacing a controller, or
+troubleshooting stale split bonds. It clears persistent settings, including RGB
+state and Bluetooth profiles, not just split bonds. Flash the reset image to all
+three first, then restore the normal left, right, and dongle firmware. The reset
+image disables Bluetooth, so the keyboard will not work until normal firmware is
+restored.
 
 ### Local build
 
@@ -209,21 +253,12 @@ west build -s zmk/app -b xiao_ble//zmk -- -DSHIELD=imprint_dongle -DZMK_CONFIG=/
 
 ---
 
-## First-time setup / re-pairing
+## First-time setup
 
-> **This step is mandatory.** Skipping it is the most common cause of pairing
-> failures with a dongle setup.
-
-1. **Flash `settings_reset`** to all three devices:
-   - Both halves: use the `nice_nano//zmk` settings_reset binary
-   - Dongle: use the `xiao_ble//zmk` settings_reset binary
-   - To enter bootloader: double-press the reset button; a USB drive named
-     `NRF52BOOT` or `XIAO-SENSE` appears; drag-and-drop the `.uf2` file onto it
-2. **Flash actual firmware** to each device (left, right, dongle)
-3. **Power on all three** — they advertise and pair automatically on first boot
-
-Repeat this full sequence any time you need to re-pair (e.g. after flashing new
-firmware that changes the split configuration).
+Flash the normal left, right, and dongle firmware to their matching devices, then
+power all three on. ZMK automatically pairs split devices that have no saved bond.
+If they fail to pair because of stale bonds or a central-role change, follow the
+`settings_reset` procedure above.
 
 ---
 

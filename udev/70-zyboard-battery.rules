@@ -1,0 +1,2 @@
+# Grant the active desktop user access to Imprint's USB HID interfaces.
+SUBSYSTEM=="hidraw", KERNEL=="hidraw*", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="615e", TAG+="uaccess"
